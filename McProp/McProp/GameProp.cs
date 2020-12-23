@@ -38,7 +38,7 @@ namespace McProp
         public virtual TreeNode toNode()
         {
             TreeNode node = new TreeNode();
-            node.Text = this.getName() + " - 0x" + this.getData() + " - 0x" + this.getOffset().ToString("X");
+            node.Text = this.ToString();
             return node;
         }
 
@@ -63,6 +63,11 @@ namespace McProp
                 theAddress = (ulong)memLib.ReadLong(thePtr.ToString("X"));
             }
             return theAddress;
+        }
+
+        public override string ToString()
+        {
+            return this.getName() + " - 0x" + this.getData() + " - 0x" + this.getOffset().ToString("X");
         }
     }
 }

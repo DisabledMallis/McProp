@@ -12,9 +12,13 @@ namespace McProp.Props
         {
 
         }
-        public override string ToString()
+        public override string getType()
         {
-            return this.getName() + " - " + BitConverter.ToSingle(BitConverter.GetBytes(this.getData()), 0) + " - 0x" + this.getOffset().ToString("X");
+            return "float";
+        }
+        public override string getValueString()
+        {
+            return BitConverter.ToSingle(BitConverter.GetBytes(this.getAddress()), 0).ToString();
         }
     }
 }

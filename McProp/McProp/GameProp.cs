@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace McProp
 {
-    class GameProp
+    class GameProp : TreeNode
     {
         private string propName = "";
         private int offset = 0;
@@ -19,6 +19,7 @@ namespace McProp
             this.propName = propName;
             this.offset = offset;
             this.parent = parent;
+            this.Text = this.ToString();
         }
         
 
@@ -34,15 +35,12 @@ namespace McProp
         {
             return this.parent;
         }
-
-        public virtual TreeNode toNode()
+        public virtual string getType()
         {
-            TreeNode node = new TreeNode();
-            node.Text = this.ToString();
-            return node;
+            return "long";
         }
 
-        public virtual ulong getData()
+        public virtual ulong getAddress()
         {
             Mem memLib = Program.getMem();
             List<int> offsets = new List<int>();
@@ -56,18 +54,34 @@ namespace McProp
                 nextParent = nextParent.getParent();
             }
             offsets.Reverse();
-            ulong theAddress = nextParent.getData();
-            foreach(int offset in offsets)
+            ulong theAddress = nextParent.getAddress();
+            int i = 0;
+            foreach (int offset in offsets)
             {
-                ulong thePtr = theAddress + (ulong)offset;
-                theAddress = (ulong)memLib.ReadLong(thePtr.ToString("X"));
+                i++;
+                if(offsets.Count == i)
+                {
+                    ulong thePtr = theAddress + (ulong)offset;
+                    theAddress = (ulong)memLib.ReadLong(thePtr.ToString("X"));
+                }
             }
             return theAddress;
+        }
+        public virtual ulong getData()
+        {
+            Mem memLib = Program.getMem();
+            ulong value = (ulong)memLib.ReadLong(getAddress().ToString("X"));
+            return value;
+        }
+
+        public virtual string getValueString()
+        {
+            return this.getData().ToString("X");
         }
 
         public override string ToString()
         {
-            return this.getName() + " - 0x" + this.getData() + " - 0x" + this.getOffset().ToString("X");
+            return this.getName() + " - " + this.getValueString() + " - 0x" + this.getOffset().ToString("X");
         }
     }
 }

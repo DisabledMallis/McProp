@@ -9,25 +9,15 @@ namespace McProp
 {
     class GameClass : GameProp
     {
-        private List<GameProp> properties;
         public GameClass(string className, GameProp parent) : this(className, 0, parent) { }
-        public GameClass(string className, int offset, GameProp parent) : base(className, offset, parent)
-        {
-            properties = new List<GameProp>();
-        }
+        public GameClass(string className, int offset, GameProp parent) : base(className, offset, parent) { }
         public void addProp(GameProp toAdd)
         {
-            properties.Add(toAdd);
+            this.Nodes.Add(toAdd);
         }
-
-        public override TreeNode toNode()
+        public override string getValueString()
         {
-            TreeNode node = base.toNode();
-            foreach(GameProp gameProp in properties)
-            {
-                node.Nodes.Add(gameProp.toNode());
-            }
-            return node;
+            return this.getAddress().ToString("X");
         }
     }
 }

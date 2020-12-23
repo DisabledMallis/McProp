@@ -15,7 +15,12 @@ namespace McProp.Objects
             this.addProp(new LocalPlayer(this));
         }
 
-        public override ulong getData()
+        public override string getValueString()
+        {
+            return this.getAddress().ToString("X");
+        }
+
+        public override ulong getAddress()
         {
             return this.address;
         }

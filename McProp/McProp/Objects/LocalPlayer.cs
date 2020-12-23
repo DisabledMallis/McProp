@@ -16,7 +16,7 @@ namespace McProp.Objects
             this.addProp(new FloatProp("distanceTraveled", 0x334, this));
             this.addProp(new FloatProp("positionX_a", 0x498, this));
             this.addProp(new FloatProp("positionY_a", 0x49C, this));
-            this.addProp(new FloatProp("positionZ_a", 0x490, this));
+            this.addProp(new FloatProp("positionZ_a", 0x4A0, this));
             this.addProp(new FloatProp("positionX_b", 0x4A4, this));
             this.addProp(new FloatProp("positionY_b", 0x4A8, this));
             this.addProp(new FloatProp("positionZ_b", 0x4AC, this));

@@ -1,1 +1,11 @@
 .vs/
+*.ilk
+*.pdb
+*.exe
+*.dll
+*.lib
+*.obj
+*.tlog
+*.log
+*.idb
+*.recipe

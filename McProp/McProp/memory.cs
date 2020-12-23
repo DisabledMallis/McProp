@@ -137,6 +137,9 @@ namespace Memory
             uint dwFreeType
             );
 
+        [DllImport("psapi.dll", SetLastError = true)]
+        static extern bool GetModuleInformation(IntPtr hProcess, IntPtr hModule, out MODULEINFO lpmodinfo, uint cb);
+
         [DllImport("psapi.dll")]
         static extern uint GetModuleFileNameEx(IntPtr hProcess, IntPtr hModule, [Out] StringBuilder lpBaseName, [In][MarshalAs(UnmanagedType.U4)] int nSize);
         [DllImport("psapi.dll", SetLastError = true)]
@@ -216,6 +219,7 @@ namespace Memory
         [DllImport("user32.dll")]
         static extern bool SetForegroundWindow(IntPtr hWnd);
 
+
         private enum SnapshotFlags : uint
         {
             HeapList = 0x00000001,
@@ -243,6 +247,14 @@ namespace Memory
             internal UInt32 dwFlags;
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MAX_PATH)]
             internal string szExeFile;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MODULEINFO
+        {
+            public IntPtr lpBaseOfDll;
+            public uint SizeOfImage;
+            public IntPtr EntryPoint;
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = System.Runtime.InteropServices.CharSet.Auto)]
@@ -1595,9 +1607,10 @@ namespace Memory
         /// <remarks>Please ensure that you use the proper replaceCount
         /// if you replace halfway in an instruction you may cause bad things</remarks>
         /// <returns>UIntPtr to created code cave for use for later deallocation</returns>
+        private static int JUMP_SIZE = 14;
         public UIntPtr CreateCodeCave(string code, byte[] newBytes, int replaceCount, int size = 0x1000, string file = "")
         {
-            if (replaceCount < 5)
+            if (replaceCount < JUMP_SIZE)
                 return UIntPtr.Zero; // returning UIntPtr.Zero instead of throwing an exception
                                      // to better match existing code
 
@@ -1610,41 +1623,43 @@ namespace Memory
             UIntPtr caveAddress = UIntPtr.Zero;
             UIntPtr prefered = address;
 
-            for(var i = 0; i < 10 && caveAddress == UIntPtr.Zero; i++)
+            /*for(var i = 0; i < 10 && caveAddress == UIntPtr.Zero; i++)
             {
                 caveAddress = VirtualAllocEx(pHandle, FindFreeBlockForRegion(prefered, (uint)size),
                                              (uint)size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
 
                 if (caveAddress == UIntPtr.Zero)
                     prefered = UIntPtr.Add(prefered, 0x10000);
-            }
+            }*/
 
             // Failed to allocate memory around the address we wanted let windows handle it and hope for the best?
             if (caveAddress == UIntPtr.Zero)
                 caveAddress = VirtualAllocEx(pHandle, UIntPtr.Zero, (uint)size, MEM_COMMIT | MEM_RESERVE,
                                              PAGE_EXECUTE_READWRITE);
 
-            int nopsNeeded = replaceCount > 5 ? replaceCount - 5 : 0;
+            int nopsNeeded = replaceCount > JUMP_SIZE ? replaceCount - JUMP_SIZE : 0;
 
-            // (to - from - 5)
-            int offset = (int)((long)caveAddress - (long)address - 5);
+            // (to - from - JUMP_SIZE)
+            int offset = (int)((long)caveAddress - (long)address - JUMP_SIZE);
 
-            byte[] jmpBytes = new byte[5 + nopsNeeded];
-            jmpBytes[0] = 0xE9;
-            BitConverter.GetBytes(offset).CopyTo(jmpBytes, 1);
+            byte[] jmpBytes = new byte[JUMP_SIZE + nopsNeeded];
+            jmpBytes[0] = 0xFF;
+            jmpBytes[1] = 0x25;
+            BitConverter.GetBytes((long)caveAddress).CopyTo(jmpBytes, 6);
 
-            for(var i = 5; i < jmpBytes.Length; i++)
+            for(var i = JUMP_SIZE; i < jmpBytes.Length; i++)
             {
                 jmpBytes[i] = 0x90;
             }
             WriteBytes(address, jmpBytes);
 
-            byte[] caveBytes = new byte[5 + newBytes.Length];
-            offset = (int)(((long)address + jmpBytes.Length) - ((long)caveAddress + newBytes.Length) - 5);
+            byte[] caveBytes = new byte[JUMP_SIZE + newBytes.Length];
+            offset = (int)(((long)address + jmpBytes.Length) - ((long)caveAddress + newBytes.Length) - JUMP_SIZE);
 
             newBytes.CopyTo(caveBytes, 0);
-            caveBytes[newBytes.Length] = 0xE9;
-            BitConverter.GetBytes(offset).CopyTo(caveBytes, newBytes.Length + 1);
+            caveBytes[newBytes.Length] = 0xFF;
+            caveBytes[newBytes.Length+1] = 0x25;
+            BitConverter.GetBytes((long)address + replaceCount).CopyTo(caveBytes, newBytes.Length + 6);
 
             WriteBytes(caveAddress, caveBytes);
 
@@ -1933,6 +1948,24 @@ namespace Memory
             SYSTEM_INFO SI;
             GetSystemInfo(out SI);
             return (ulong)SI.minimumApplicationAddress;
+        }
+        public ulong GetMaxAddress()
+        {
+            SYSTEM_INFO SI;
+            GetSystemInfo(out SI);
+            return (ulong)SI.maximumApplicationAddress;
+        }
+        public ulong GetModuleSize(string moduleName)
+        {
+            IntPtr mHandle = GetModuleHandle(moduleName);
+            MODULEINFO info = new MODULEINFO();
+            GetModuleInformation(pHandle, mHandle, out info, (uint)Marshal.SizeOf(info));
+            return info.SizeOfImage;
+        }
+        public ulong GetModuleEnd(string moduleName)
+        {
+            ulong moduleSize = GetModuleSize(moduleName);
+            return ((ulong)GetModuleHandle(moduleName).ToInt64()) + moduleSize;
         }
 
         /// <summary>

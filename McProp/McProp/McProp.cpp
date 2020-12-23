@@ -124,7 +124,8 @@ int main(int, char**)
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::Begin("Process");
+        ImGui::Begin("ClientInstance");
+        ImGui::Text("Successfully attached to the game!");
         ImGui::End();
 
         // Rendering

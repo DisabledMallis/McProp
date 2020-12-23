@@ -141,6 +141,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameClass.cpp" />
+    <ClCompile Include="GameProp.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_demo.cpp" />
     <ClCompile Include="ImGui\imgui_draw.cpp" />
@@ -148,9 +150,13 @@
     <ClCompile Include="ImGui\imgui_impl_win32.cpp" />
     <ClCompile Include="ImGui\imgui_tables.cpp" />
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="McProp.cpp" />
+    <ClCompile Include="Process.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameClass.h" />
+    <ClInclude Include="GameProp.h" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
     <ClInclude Include="ImGui\imgui_impl_dx11.h" />
@@ -159,6 +165,9 @@
     <ClInclude Include="ImGui\imstb_rectpack.h" />
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
+    <ClInclude Include="Main.h" />
+    <ClInclude Include="memTypes.h" />
+    <ClInclude Include="Process.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

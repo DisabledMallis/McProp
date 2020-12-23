@@ -10,3 +10,9 @@
 *.idb
 *.recipe
 *.ini
+*.cache
+x64/
+Debug/
+Release/
+bin/
+obj/

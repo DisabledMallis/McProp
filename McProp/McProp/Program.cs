@@ -14,6 +14,8 @@ namespace McProp
         private static Mem memLib;
         static void Main(string[] args)
         {
+            Console.WriteLine("Welcome to the Minecraft: Bedrock Edition property editor, made by ASM#5667. Jirachi Gang");
+            Console.WriteLine("Targeting version 1.16.201");
             Console.WriteLine("Loading...");
             memLib = new Mem();
             if (!memLib.OpenProcess("Minecraft.Windows"))
@@ -26,11 +28,8 @@ namespace McProp
             Console.WriteLine("Search complete");
 
             Console.WriteLine("Creating Explorer...");
-            Explorer explorer = new Explorer();
-            Console.WriteLine("Mapping client...");
-            ClientInstance instance = new ClientInstance(ciPtr);
-            Console.WriteLine("Populating tree...");
-            explorer.objectList.Nodes.Add(instance.toNode());
+            Explorer explorer = new Explorer(ciPtr);
+            explorer.populate();
 
             Application.Run(explorer);
         }

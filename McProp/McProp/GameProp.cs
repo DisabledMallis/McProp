@@ -38,11 +38,11 @@ namespace McProp
         public virtual TreeNode toNode()
         {
             TreeNode node = new TreeNode();
-            node.Text = this.getName() + " - 0x" + this.getAddress().ToString("X") + " - 0x" + this.getOffset().ToString("X");
+            node.Text = this.getName() + " - 0x" + this.getData() + " - 0x" + this.getOffset().ToString("X");
             return node;
         }
 
-        public virtual ulong getAddress()
+        public virtual ulong getData()
         {
             Mem memLib = Program.getMem();
             List<int> offsets = new List<int>();
@@ -56,7 +56,7 @@ namespace McProp
                 nextParent = nextParent.getParent();
             }
             offsets.Reverse();
-            ulong theAddress = nextParent.getAddress();
+            ulong theAddress = nextParent.getData();
             foreach(int offset in offsets)
             {
                 ulong thePtr = theAddress + (ulong)offset;

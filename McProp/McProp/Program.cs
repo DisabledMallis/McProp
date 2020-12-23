@@ -22,13 +22,13 @@ namespace McProp
                 return;
             }
             Console.WriteLine("Searching for ClientInstance...");
-            CInstHook.getClientInstance();
+            ulong ciPtr = CInstHook.getClientInstance();
             Console.WriteLine("Search complete");
 
             Console.WriteLine("Creating Explorer...");
             Explorer explorer = new Explorer();
             Console.WriteLine("Mapping client...");
-            ClientInstance instance = new ClientInstance();
+            ClientInstance instance = new ClientInstance(ciPtr);
             Console.WriteLine("Populating tree...");
             explorer.objectList.Nodes.Add(instance.toNode());
 

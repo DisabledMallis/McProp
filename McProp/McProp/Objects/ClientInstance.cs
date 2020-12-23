@@ -8,9 +8,16 @@ namespace McProp.Objects
 {
     class ClientInstance : GameClass
     {
-        public ClientInstance() : base("ClientInstance")
+        ulong address = 0;
+        public ClientInstance(ulong address) : base("ClientInstance", 0, null)
         {
-            this.addProp(new LocalPlayer());
+            this.address = address;
+            this.addProp(new LocalPlayer(this));
+        }
+
+        public override ulong getAddress()
+        {
+            return this.address;
         }
     }
 }

@@ -8,8 +8,9 @@ namespace McProp.Objects
 {
     class LocalPlayer : GameClass
     {
-        public LocalPlayer() : base("LocalPlayer", 0x140)
+        public LocalPlayer(GameProp parent) : base("LocalPlayer", 0x140, parent)
         {
+            this.addProp(new GameProp("stepHeight", 0x220, this));
         }
     }
 }

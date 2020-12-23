@@ -29,7 +29,7 @@ namespace McProp
 
             memLib.WriteBytes(result.ToString("X"), new byte[] { 0x44, 0x89, 0x44, 0x24, 0x18 });
 
-            return 0;
+            return clientInstancePtr;
         }
     }
 }

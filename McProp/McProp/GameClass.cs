@@ -9,9 +9,9 @@ namespace McProp
 {
     class GameClass : GameProp
     {
-        List<GameProp> properties;
-        public GameClass(string className) : this(className, 0) { }
-        public GameClass(string className, int offset) : base(className, offset) 
+        private List<GameProp> properties;
+        public GameClass(string className, GameProp parent) : this(className, 0, parent) { }
+        public GameClass(string className, int offset, GameProp parent) : base(className, offset, parent)
         {
             properties = new List<GameProp>();
         }
